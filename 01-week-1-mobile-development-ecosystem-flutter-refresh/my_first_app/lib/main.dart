@@ -17,6 +17,7 @@ class MyApp extends StatelessWidget {
             Text('Nabillah Umi Purnama', style: TextStyle(fontSize: 24)),
             Text('244107020054', style: TextStyle(fontSize: 18)),
             Text('Pemrograman Mobile — Minggu 1'),
+            Text('POLITEKNIK NEGERI MALANG', style: TextStyle(fontSize: 20)),
           ]),
         ),
       ),
