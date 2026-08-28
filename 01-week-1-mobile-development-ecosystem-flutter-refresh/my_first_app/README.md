@@ -12,11 +12,11 @@ berikut merupakan hasil running:
 
 Tampilan awal:
 
-![screenshot](screenshots/tampilan-awal.jpeg)
+![screenshot](screenshot/tampilan-awal.jpeg)
 
 Tampilan setelah diubah:
 
-![screenshot](screenshots/belum-diubah.jpeg)
+![screenshot](screenshot/belum-diubah.jpeg)
 
 
 *Tujuan*
@@ -49,7 +49,7 @@ Pada mini assignment, saya menambahkan informasi NIM dan nama kampus pada aplika
 
 Berikut hasil akhir dari mini assignment:
 
-![Mini Assignment](screenshots/mini-assigment.jpeg)
+![Mini Assignment](screenshot/mini-assigment.jpeg)
 
 
 *Hasil yang Dicapai*
