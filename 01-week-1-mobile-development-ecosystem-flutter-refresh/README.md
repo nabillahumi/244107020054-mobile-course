@@ -49,7 +49,7 @@ Pada mini assignment, saya menambahkan informasi NIM dan nama kampus pada aplika
 
 Berikut hasil akhir dari mini assignment:
 
-![screenshot](Sreenshot/mini-assigment.jpeg)
+![screenshot](Screenshot/mini-assigment.jpeg)
 
 
 *Hasil yang Dicapai*
