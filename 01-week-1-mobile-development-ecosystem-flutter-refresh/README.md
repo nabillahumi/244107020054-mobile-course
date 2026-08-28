@@ -18,6 +18,9 @@ Tampilan setelah diubah:
 
 ![screenshot](screenshot/belum-diubah.jpeg)
 
+Berikut hasil akhir dari mini assignment:
+
+![screenshot](screenshot/mini-assigment.jpeg)
 
 *Tujuan*
 
