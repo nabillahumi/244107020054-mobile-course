@@ -4,32 +4,64 @@ void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
-
-      theme: ThemeData(
-        brightness: Brightness.light,
-      ),
-
-      darkTheme: ThemeData(
-        brightness: Brightness.dark,
-      ),
-
-      themeMode: ThemeMode.system,
       home: Scaffold(
-        appBar: AppBar(title: const Text('Profil Mahasiswa')),
-        body: const Center(
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
-            Icon(Icons.school, size: 72),
-            SizedBox(height: 16),
-            Text('Nabillah Umi Purnama', style: TextStyle(fontSize: 24)),
-            Text('244107020054', style: TextStyle(fontSize: 18)),
-            Text('Pemrograman Mobile — Minggu 1'),
-            Text('POLITEKNIK NEGERI MALANG', style: TextStyle(fontSize: 20)),
+        body: Center(child: ProfileCard()),
+      ),
+    );
+  }
+}
+
+class ProfileCard extends StatelessWidget {
+  const ProfileCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 320,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.indigo.shade50,
+        borderRadius: BorderRadius.circular(16),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              const CircleAvatar(child: Icon(Icons.person)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: const [
+                    Text('Nama Mahasiswa',
+                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Nabillah Umi Purnama Mahasiswa Pemrograman Mobile'),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Row(children: [
+            Expanded(child: Text('NIM')),
+            Text('244107020054'),
           ]),
-        ),
+          const Row(children: [
+            Expanded(child: Text('Kelas')),
+            Text('TI-3H'),
+          ]),
+          const Row(
+            children: [
+              Expanded(child: Text('Email')),
+              Text('email@student.ac.id'),
+            ]),
+        ],
       ),
     );
   }
