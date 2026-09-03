@@ -10,6 +10,21 @@
 
 berikut merupakan hasil running:
 
+SDK
+
+![screenshot](Screenshot/SDK.jpeg)
+
+Flutter doctor
+
+![screenshot](Screenshot/flutter-doctor.jpeg)
+
+Saat melakukan pengecekan menggunakan flutter doctor, masih terdapat kendala pada Android license yang terdeteksi sebagai unknown, meskipun Android SDK dan Command-line Tools sudah terpasang. Namun, HP Android tetap berhasil terdeteksi oleh Flutter dan aplikasi dapat dijalankan dengan normal pada perangkat.
+Flutter device
+
+![screenshot](Screenshot/flutter-devices.jpeg)
+
+Flutter sudah dapat mendeteksi perangkat Android dan beberapa platform lain sehingga aplikasi dapat dijalankan untuk proses pengembangan dan pengujian
+
 Tampilan awal:
 
 ![screenshot](Screenshot/tampilan-awal.jpeg)
