@@ -8,6 +8,16 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
+      theme: ThemeData(
+        brightness: Brightness.light,
+      ),
+
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+      ),
+
+      themeMode: ThemeMode.system,
       home: Scaffold(
         appBar: AppBar(title: const Text('Profil Mahasiswa')),
         body: const Center(
