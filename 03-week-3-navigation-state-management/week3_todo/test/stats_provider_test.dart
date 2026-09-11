@@ -35,10 +35,17 @@ void main() {
       addTearDown(container.dispose);
 
       // future akan melempar error ketika notifier berada pada state error.
-      await expectLater(
-        container.read(statsProvider.future),
-        throwsA(isA<Exception>()),
-      );
-    },
+      // Memulai proses provider.
+        container.read(statsProvider);
+
+        // Menunggu proses asynchronous selama 2 detik.
+        await Future.delayed(const Duration(seconds: 2));
+
+        // Memastikan provider berada pada kondisi error.
+        final state = container.read(statsProvider);
+
+        expect(state.hasError, isTrue);
+        expect(state.error, isA<Exception>());
+        },
   );
 }

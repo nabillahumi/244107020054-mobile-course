@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-import 'pages/stats_page.dart';
+import 'router/app_router.dart';
 
 // ProviderScope menyediakan konteks Riverpod untuk seluruh aplikasi.
 void main() => runApp(const ProviderScope(child: MyApp()));
@@ -11,9 +12,9 @@ class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) => MaterialApp(
-    title: 'Week 3 - Statistik',
+  Widget build(BuildContext context) => MaterialApp.router(
+    title: 'Week 3 - ToDo App',
     theme: ThemeData(colorSchemeSeed: Colors.teal, useMaterial3: true),
-    home: const StatsPage(),
+    routerConfig: router,
   );
 }

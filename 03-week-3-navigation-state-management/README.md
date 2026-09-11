@@ -105,7 +105,7 @@ stats_provider_test.dart
 
 ![screenshot](Screenshot/s_prov_test1.jpeg)
 
-![screenshot](Screenshot/s_proc_test2.jpeg)
+![screenshot](Screenshot/s_prov_test2.jpeg)
 
 main.dart
 
@@ -150,3 +150,55 @@ flutter analyze berhasil tanpa masalah, sedangkan flutter test awal menemukan ma
 
 #### 3. Perbaikan
 
+Setelah melakukan verifikasi terhadap kode yang dihasilkan AI, ditemukan beberapa bagian pada kode testing yang perlu diperbaiki
+
+1. Perbaikan unit test asynchronous
+Pada stats_provider_test.dart, pengujian kondisi error awalnya menggunakan expect() secara langsung terhadap Future. Kode diperbaiki menggunakan await expectLater() agar test menunggu proses asynchronous sampai selesai sebelum memeriksa exception.
+2. Penyesuaian widget test dengan Riverpod
+Pada widget_test.dart, test bawaan Flutter tidak sesuai dengan aplikasi yang sudah menggunakan Riverpod. Test diperbaiki dengan menambahkan ProviderScope dan override statsProvider agar halaman StatsPage dapat diuji dengan kondisi yang terkontrol.
+3. Verifikasi hasil testing
+Setelah perbaikan dilakukan, kode diuji kembali menggunakan flutter analyze dan flutter test untuk memastikan tidak terdapat masalah pada kode maupun pengujian.
+
+###### Hasil Perbaikan
+
+![screenshot](Screenshot/hasil_perbaikan.jpeg)
+
+flutter test
+
+![screenshot](Screenshot/flutter_test1.jpeg)
+
+### Refactoring dan testing
+
+#### 1. Refactoring Challenge
+
+Lakukan refactoring berikut pada aplikasi ToDo Anda, lalu commit dengan pesan yang jelas:
+
+1. Pisahkan widget bar ToDo menjadi TodoTile tersendiri agar build lebih pendek dan mudah diuji.
+
+![screenshot](Screenshot/kode_tile.jpeg)
+
+![screenshot](Screenshot/tambahan_todo.jpeg)
+
+![screenshot](Screenshot/susuan.jpeg)
+
+2. Ekstrak logika filter (misal tampilkan hanya yang belum selesai) menjadi Provider turunan yang membaca todoListProvider.
+
+![screenshot](Screenshot/tambahan_prov.jpeg)
+
+3. Integrasikan aplikasi ToDo dengan GoRouter: / untuk daftar dan /stats untuk halaman statistik, tambahkan NavigationBar untuk berpindah.
+
+
+
+#### 2. Testing
+
+Widget test untuk memastikan UI bereaksi terhadap perubahan state provider:
+
+Jalankan seluruh verifikasi:
+
+#### 3. Checklist verifikasi mandiri
+
+Navigasi GoRouter bekerja: pindah halaman, back, dan akses path detail langsung.
+ProviderScope membungkus root aplikasi; state ToDo bertahan saat berpindah halaman.
+UI AsyncValue menangani loading, error, dan success, bukan hanya success.
+flutter analyze tanpa issue dan semua test lulus.
+Hasil AI diverifikasi dan didokumentasikan pada folder docs/.
