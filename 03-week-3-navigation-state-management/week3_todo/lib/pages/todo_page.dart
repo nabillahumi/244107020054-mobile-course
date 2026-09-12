@@ -15,27 +15,22 @@ class TodoPage extends ConsumerWidget {
       body: todos.isEmpty
           ? const Center(child: Text('Belum ada tugas'))
           : ListView.builder(
-              itemCount: todos.length,
-              itemBuilder: (context, index) => ListTile(
-                leading: Checkbox(
-                  value: todos[index].done,
-                  onChanged: (_) =>
-                      ref.read(todoListProvider.notifier).toggle(index),
-                ),
-                title: Text(
-                  todos[index].title,
-                  style: TextStyle(
-                      decoration: todos[index].done
-                          ? TextDecoration.lineThrough
-                          : null),
-                ),
-                trailing: IconButton(
-                  icon: const Icon(Icons.delete),
-                  onPressed: () =>
-                      ref.read(todoListProvider.notifier).remove(index),
-                ),
-              ),
-            ),
+            itemCount: todos.length,
+            itemBuilder: (context, index) {
+              final todo = todos[index];
+
+              return TodoTile(
+                title: todo.title,
+                isCompleted: todo.done,
+                onChanged: (_) {
+                  ref.read(todoListProvider.notifier).toggle(index);
+                },
+                onDelete: () {
+                  ref.read(todoListProvider.notifier).remove(index);
+                },
+              );
+            },
+          ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showAddDialog(context, ref),
         child: const Icon(Icons.add),
