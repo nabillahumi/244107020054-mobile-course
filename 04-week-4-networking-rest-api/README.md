@@ -50,14 +50,18 @@ Berikut merupakan hasil running:
 
 Sebelum kode AI diterima, verifikasi hal berikut dan catat temuan Anda di README:
 
-*1. Apakah UI memanggil Dio secara langsung (dilarang) atau lewat repository?*
+*1. [✓] Apakah UI memanggil Dio secara langsung (dilarang) atau lewat repository?*
 
-*2. Apakah fromJson aman null, atau masih memakai cast langsung yang bisa crash?*
+Jawab : 
+Iya, lolos. UI tidak memanggil Dio secara langsung, melainkan menggunakan Riverpod provider (commentListProvider) yang memanggil CommentRepository. Kode di UI hanya memanggil:
+final commentsAsync = ref.watch(commentListProvider(postId));
 
-*3. Apakah semua tipe DioExceptionType (timeout, connectionError, badResponse) dipetakan ke pesan pengguna?*
+*2. [✓] Apakah fromJson aman null, atau masih memakai cast langsung yang bisa crash?*
 
-*4. Apakah baseUrl/timeout terpusat di satu client, bukan tersebar di tiap method?*
+*3. [✓] Apakah semua tipe DioExceptionType (timeout, connectionError, badResponse) dipetakan ke pesan pengguna?*
 
-*5. Apakah test AI benar-benar menguji kasus field hilang, atau hanya happy path? Tambahkan minimal 1 edge case sendiri.*
+*4. [✓] Apakah baseUrl/timeout terpusat di satu client, bukan tersebar di tiap method?*
 
-*6. Jalankan flutter analyze dan flutter test, apakah hasil AI lolos tanpa warning?*
+*5. [✓] Apakah test AI benar-benar menguji kasus field hilang, atau hanya happy path? Tambahkan minimal 1 edge case sendiri.*
+
+*6. [✓] Jalankan flutter analyze dan flutter test, apakah hasil AI lolos tanpa warning?*
