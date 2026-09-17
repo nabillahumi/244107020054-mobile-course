@@ -62,7 +62,7 @@ Berikut merupakan hasil running:
 
 *1. Salin kode di atas ke project ToDo Anda (atau project terpisah) dan jalankan. Amati tampilan loading selama 2 detik pertama.*
 
-![screenshot](Screenshot/hasil_asyncvalue.jpeg)
+![screenshot](Screenshot/h asil_asyncvalue.jpeg)
 
 Aplikasi menampilkan loading selama 2 detik, kemudian menampilkan data Keyboard, Mouse, dan Monitor.
 
