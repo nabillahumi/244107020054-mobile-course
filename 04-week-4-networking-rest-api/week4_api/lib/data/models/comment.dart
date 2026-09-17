@@ -5,7 +5,7 @@ class Comment {
   final String email;
   final String body;
 
-  Comment({
+  const Comment({
     required this.postId,
     required this.id,
     required this.name,
@@ -13,14 +13,24 @@ class Comment {
     required this.body,
   });
 
-  // KODE AI (UNSAFE CASTING): Berbahaya jika ada field null / hilang
+  // PERBAIKAN: Menggunakan null-safety & default value jika field hilang/null
   factory Comment.fromJson(Map<String, dynamic> json) {
     return Comment(
-      postId: json['postId'] as int,
-      id: json['id'] as int,
-      name: json['name'] as String,
-      email: json['email'] as String,
-      body: json['body'] as String,
+      postId: (json['postId'] as num?)?.toInt() ?? 0,
+      id: (json['id'] as num?)?.toInt() ?? 0,
+      name: (json['name'] as String?) ?? 'No Name',
+      email: (json['email'] as String?) ?? 'No Email',
+      body: (json['body'] as String?) ?? 'No Content',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'postId': postId,
+      'id': id,
+      'name': name,
+      'email': email,
+      'body': body,
+    };
   }
 }

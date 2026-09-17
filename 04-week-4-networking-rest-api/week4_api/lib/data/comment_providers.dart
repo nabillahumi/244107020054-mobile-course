@@ -4,19 +4,18 @@ import 'models/comment.dart';
 import 'providers.dart';
 import 'repositories/comment_repository.dart';
 
-// Provider untuk instance CommentRepository
 final commentRepositoryProvider = Provider<CommentRepository>(
   (ref) => CommentRepository(ref.watch(dioProvider)),
 );
 
-// FutureProvider.family untuk mengambil daftar komentar berdasarkan postId
+// PERBAIKAN: Menggunakan FutureProvider.family resmi dari Riverpod
 final commentListProvider =
     FutureProvider.family<List<Comment>, int>((ref, postId) async {
   final repository = ref.watch(commentRepositoryProvider);
   return repository.fetchComments(postId);
 });
 
-// Helper pesan error ramah pengguna
+// Helper penanganan pesan error ramah pengguna
 String friendlyCommentErrorMessage(Object error) {
   if (error is DioException) {
     switch (error.type) {

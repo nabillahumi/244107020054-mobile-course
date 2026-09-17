@@ -7,17 +7,16 @@ class CommentRepository {
   CommentRepository(this._dio);
 
   Future<List<Comment>> fetchComments(int postId) async {
-    final response = await _dio.get(
+    final response = await _dio.get<List>(
       '/comments',
       queryParameters: {'postId': postId},
-      // KODE AI: Menaruh timeout lokal secara manual di level repository
-      options: Options(
-        sendTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 10),
-      ),
     );
 
-    final List data = response.data;
-    return data.map((json) => Comment.fromJson(json)).toList();
+    final data = response.data ?? [];
+
+    return data
+        .whereType<Map<String, dynamic>>()
+        .map((json) => Comment.fromJson(json))
+        .toList();
   }
 }
