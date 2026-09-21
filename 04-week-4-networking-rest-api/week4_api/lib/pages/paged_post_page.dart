@@ -1,87 +1,50 @@
+// lib/pages/paged_post_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../data/paged_posts.dart';
+import 'package:go_router/go_router.dart';
 import '../data/providers.dart';
+import '../data/network_errors.dart';
+import '../widgets/post_tile.dart';
 
-class PagedPostPage extends ConsumerStatefulWidget {
+class PagedPostPage extends ConsumerWidget {
   const PagedPostPage({super.key});
 
   @override
-  ConsumerState<PagedPostPage> createState() =>
-      _PagedPostPageState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    final postsAsync = ref.watch(postListProvider);
 
-class _PagedPostPageState
-    extends ConsumerState<PagedPostPage> {
-  final _controller = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    _controller.addListener(() {
-      if (_controller.position.pixels >=
-          _controller.position.maxScrollExtent - 200) {
-        ref.read(pagedPostsProvider.notifier).loadNextPage();
-      }
-    });
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final state = ref.watch(pagedPostsProvider);
-    if (state.error != null && state.items.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Posts Paged')),
-        body: Center(
+    return Scaffold(
+      appBar: AppBar(title: const Text('Posts API')),
+      body: postsAsync.when(
+        data: (posts) {
+          if (posts.isEmpty) {
+            return const Center(child: Text('Tidak ada data.'));
+          }
+          return ListView.builder(
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              final post = posts[index];
+              return PostTile(
+                post: post,
+                onTap: () => context.push('/post/${post.id}'),
+              );
+            },
+          );
+        },
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (err, stack) => Center(
           child: Column(
-            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(friendlyErrorMessage(state.error!)),
-              const SizedBox(height: 12),
-              FilledButton(
-                onPressed: () => ref
-                    .read(pagedPostsProvider.notifier)
-                    .loadFirstPage(),
-                child: const Text('Coba lagi'),
+              Text(friendlyErrorMessage(err)),
+              const SizedBox(height: 8),
+              ElevatedButton(
+                onPressed: () => ref.invalidate(postListProvider),
+                child: const Text('Coba Lagi'),
               ),
             ],
           ),
         ),
-      );
-    }
-    return Scaffold(
-      appBar: AppBar(title: const Text('Posts Paged')),
-      body: ListView.builder(
-        controller: _controller,
-        itemCount: state.items.length + 1,
-        itemBuilder: (context, index) {
-          if (index == state.items.length) {
-            if (!state.hasMore) {
-              return const Padding(
-                padding: EdgeInsets.all(16),
-                child:
-                    Center(child: Text('Semua data termuat.')),
-              );
-            }
-            return const Padding(
-              padding: EdgeInsets.all(16),
-              child: Center(child: CircularProgressIndicator()),
-            );
-          }
-          final post = state.items[index];
-          return ListTile(
-            leading: CircleAvatar(
-                child: Text(post.id.toString())),
-            title: Text(post.title,
-                maxLines: 1, overflow: TextOverflow.ellipsis),
-          );
-        },
       ),
     );
   }
