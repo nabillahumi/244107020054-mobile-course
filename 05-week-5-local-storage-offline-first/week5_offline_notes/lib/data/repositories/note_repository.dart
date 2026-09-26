@@ -1,4 +1,5 @@
 import 'package:sqflite/sqflite.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../local/db.dart';
 import '../local/note.dart';
 
@@ -48,19 +49,32 @@ class NoteRepository {
     final db = await _openDb();
     await db.update('notes', {'dirty': 0}, where: 'dirty = 1');
   }
-  // Buka lib/data/repositories/note_repository.dart
-// Tambahkan method ini di dalam class NoteRepository:
 
-Future<int> syncNotes() async {
-  final dirtyCount = await countDirty();
-  if (dirtyCount == 0) return 0;
+  Future<int> syncNotes() async {
+    final dirtyCount = await countDirty();
+    if (dirtyCount == 0) return 0;
 
-  // Simulasi upload: delay 1 detik
-  await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(seconds: 1));
+    await markAllSynced();
 
-  // Tandai bersih bila server menjawab
-  await markAllSynced();
+    return dirtyCount;
+  }
 
-  return dirtyCount;
+  Future<Note?> getNoteById(String id) async {
+    final db = await _openDb();
+    final maps = await db.query(
+      'notes',
+      where: 'id = ?',
+      whereArgs: [int.tryParse(id)],
+    );
+    if (maps.isNotEmpty) {
+      return Note.fromMap(maps.first);
+    }
+    return null;
+  }
 }
-}
+
+// PROVIDER REPOSITORY UTAMA
+final noteRepositoryProvider = Provider<NoteRepository>((ref) {
+  return NoteRepository();
+});

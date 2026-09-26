@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart'; // <--- 1. TAMBAHKAN IMPORT GO_ROUTER
 import '../data/local/note.dart';
 import '../data/repositories/note_repository.dart';
 import 'settings_page.dart';
 
-// Provider untuk Repository
-final noteRepositoryProvider = Provider((ref) => NoteRepository());
 
 // Notifier untuk mengelola list catatan
-final notesNotifierProvider =
-    AsyncNotifierProvider<NotesNotifier, List<Note>>(NotesNotifier.new);
+//final noteRepositoryProvider = Provider((ref) => NoteRepository());
 
 class NotesNotifier extends AsyncNotifier<List<Note>> {
   @override
   Future<List<Note>> build() async {
-    return ref.watch(noteRepositoryProvider).fetchNotes();
+    // WAJIB PAKAI ref.watch DI SINI agar FakeNoteRepository dari test bisa masuk
+    final repository = ref.watch(noteRepositoryProvider);
+    return repository.fetchNotes();
   }
 
   Future<void> addNote(String title, String body) async {
@@ -39,6 +39,10 @@ final dirtyCountProvider = FutureProvider<int>((ref) async {
   ref.watch(notesNotifierProvider); // re-fetch saat catatan berubah
   return ref.watch(noteRepositoryProvider).countDirty();
 });
+
+final notesNotifierProvider = AsyncNotifierProvider<NotesNotifier, List<Note>>(
+  NotesNotifier.new,
+);
 
 class NotesPage extends ConsumerWidget {
   const NotesPage({super.key});
@@ -100,10 +104,8 @@ class NotesPage extends ConsumerWidget {
             icon: const Icon(Icons.sync),
             tooltip: 'Sinkronkan Data',
             onPressed: () async {
-              // Panggil syncNotes dari repository
               final count = await ref.read(noteRepositoryProvider).syncNotes();
 
-              // Refresh tampilan UI agar badge dirty bernilai 0
               ref.invalidate(notesNotifierProvider);
               ref.invalidate(dirtyCountProvider);
 
@@ -133,7 +135,7 @@ class NotesPage extends ConsumerWidget {
               ),
             ),
             loading: () => const SizedBox.shrink(),
-            error: (_, __) => const SizedBox.shrink(),
+            error: (_, _) => const SizedBox.shrink(),
           ),
           IconButton(
             icon: const Icon(Icons.settings),
@@ -178,6 +180,13 @@ class NotesPage extends ConsumerWidget {
                     ),
                   ],
                 ),
+                
+                // === 2. FUNGSI ON  ===
+                onTap: () {
+                  if (note.id != null) {
+                    context.push('/note/${note.id}');
+                  }
+                },
               );
             },
           );
@@ -191,4 +200,5 @@ class NotesPage extends ConsumerWidget {
       ),
     );
   }
+  
 }
