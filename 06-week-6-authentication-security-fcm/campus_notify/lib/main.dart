@@ -12,49 +12,82 @@ import 'pages/announcement_page.dart';
 
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final authAsync = ref.watch(authStateProvider);
-  final loggedIn = authAsync.value ?? false;
+  late final GoRouter router;
 
-  return GoRouter(
+  router = GoRouter(
     redirect: (context, state) {
+      final authAsync = ref.read(authStateProvider);
+      final loggedIn = authAsync.value ?? false;
       final goingLogin = state.matchedLocation == '/login';
-      if (!loggedIn && !goingLogin) return '/login';
-      if (loggedIn && goingLogin) return '/';
+      print(
+        ">>> [REDIRECT] loggedIn=$loggedIn | route=${state.matchedLocation}",
+      );
+      if (!loggedIn && !goingLogin) {
+        return '/login';
+      }
+      if (loggedIn && goingLogin) {
+        return '/';
+      }
       return null;
     },
+
     routes: [
-      GoRoute(path: '/login', builder: (_, __) => const LoginPage()),
-      GoRoute(path: '/', builder: (_, __) => const HomePage()),
+      GoRoute(
+        path: '/login',
+        builder: (_, __) => const LoginPage(),
+      ),
+
+      GoRoute(
+        path: '/',
+        builder: (_, __) => const HomePage(),
+      ),
+
       GoRoute(
         path: '/pengumuman/:id',
-        builder: (_, s) =>
-            AnnouncementPage(id: s.pathParameters['id'] ?? ''),
+        builder: (_, s) => AnnouncementPage(
+          id: s.pathParameters['id'] ?? '',
+        ),
       ),
     ],
   );
+
+  // Jika status login berubah, refresh redirect
+  ref.listen(authStateProvider, (_, __) {
+    router.refresh();
+  });
+
+  ref.onDispose(router.dispose);
+
+  return router;
 });
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   
- // 1. Minta izin & inisialisasi local notification
-  await requestNotificationPermission();
-  await initLocalNotifications();
+  //  (Nomor 1 Praktikum 3)
+  registerBackgroundHandler();
 
   // 2. Buat ProviderContainer agar state Riverpod bisa diisi sebelum UI muncul
   final container = ProviderContainer();
 
-  // 3. Inisialisasi token & masukkan ke Provider State
-  await initFcmToken(onToken: (token) async {
-    // Potong token untuk tampilan debug (12 karakter pertama + ...)
-    final truncatedToken = token.length > 12 ? '${token.substring(0, 12)}...' : token;
-    
-    // Kirim ke state Riverpod agar TAMPIL DI LAYAR
-    fcmTokenNotifier.value = truncatedToken;
+ // 1. Minta izin & inisialisasi local notification
+  await requestNotificationPermission();
+  await initLocalNotifications();
 
-    print("FCM Token (Truncated): $truncatedToken");
-  });
+  // Bungkus persiapan notifikasi dalam try-catch
+  try {
+    await initFcmToken(onToken: (token) async {
+      final truncatedToken =
+          token.length > 12 ? '${token.substring(0, 12)}...' : token;
+
+      fcmTokenNotifier.value = truncatedToken;
+      print("FCM Token (Truncated): $truncatedToken");
+    });
+  } catch (e) {
+    print("FCM Error: $e");
+    fcmTokenNotifier.value = "Gagal memuat token";
+  }
 
   // 4. Jalankan aplikasi menggunakan UncontrolledProviderScope
   runApp(
@@ -65,11 +98,36 @@ void main() async {
   );
 }
 
-class MainApp extends ConsumerWidget {
+class MainApp extends ConsumerStatefulWidget {
   const MainApp({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends ConsumerState<MainApp> {
+  @override
+  void initState() {
+    super.initState();
+    // Jalankan setup notifikasi di latar belakang setelah UI muncul
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final router = ref.read(routerProvider);
+
+      void navigateTo(String route) {
+        print(">>> [NAVIGASI] Pindah ke route: $route");
+        router.go(route);
+      }
+
+      // Aktifkan listener untuk Foreground & Background
+      listenForeground(navigateTo);
+
+      // Eksekusi jika aplikasi dibuka dari keadaan Terminated
+      handleTerminated(navigateTo);
+      });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
 
     return MaterialApp.router(

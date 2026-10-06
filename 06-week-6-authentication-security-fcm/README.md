@@ -76,6 +76,12 @@ Berikut merupakan hasil running:
 
 ### Uji kirim pertama dari Firebase Console
 
+Halaman Debug di HP kamu yang menampilkan token terpotong yang baru.
+
+|           Hasil token awal          |          Hasil token baru            |
+| :--------------------------------:  | :----------------------------------: |
+| ![screenshot](Screenshot/prak2.png) | ![screenshot](Screenshot/prak22.png) |
+
 1. Buka Firebase Console -> Messaging -> buat campaign notifikasi percobaan.
 
 ![screenshot](Screenshot/uji1.png)
@@ -89,3 +95,51 @@ Berikut merupakan hasil running:
 ![screenshot](Screenshot/hasil_uji.png)
 
 setelah mengklik notifikasi tersebut langsung aplikasi terbuka
+
+## Praktikum 3: Payload, tiga app state, klik dan topik
+
+| State | Yang Diharapkan | Cara Uji | Status / Hasil |
+| :--- | :--- | :--- | :---: |
+| **Foreground** | Banner lokal muncul, klik masuk ke `/pengumuman/3` | Aplikasi terbuka di layar, kirim dari Firebase Console | Berhasil (Sesuai) |
+
+Pengujian dilakukan saat aplikasi sedang terbuka (foreground). Notifikasi ditampilkan melalui local notification, kemudian ketika notifikasi diklik aplikasi mengarahkan pengguna ke halaman Pengumuman #3 melalui route /pengumuman/3.
+
+|             Notifikasi              |    Tampilan Halaman Pengumuman 3     |
+| :--------------------------------:  | :----------------------------------: |
+| ![screenshot](Screenshot/uji11.png) | ![screenshot](Screenshot/uji12.png) |
+
+| State | Yang Diharapkan | Cara Uji | Status / Hasil |
+| :--- | :--- | :--- | :---: |
+| **Background** | Banner sistem muncul, klik masuk ke rute yang benar | Tekan tombol Home, kirim dari Console, klik banner | Berhasil (Sesuai) |
+
+Pengujian dilakukan saat aplikasi berada di background dengan menekan tombol Home tanpa menutup aplikasi. Notifikasi muncul pada sistem Android, kemudian ketika notifikasi diklik aplikasi terbuka dan mengarahkan pengguna ke halaman Pengumuman #7 melalui route /pengumuman/7.
+
+|             Notifikasi              |    Tampilan Halaman Pengumuman 7     |
+| :--------------------------------:  | :----------------------------------: |
+| ![screenshot](Screenshot/uji21.png) | ![screenshot](Screenshot/uji22.png) |
+
+| State | Yang Diharapkan | Cara Uji | Status / Hasil |
+| :--- | :--- | :--- | :---: |
+| **Terminated** | Aplikasi terbuka ke rute yang benar via `getInitialMessage` | Swipe-close aplikasi (kill app), kirim dari Console, klik banner | Berhasil (Sesuai) |
+
+Pengujian dilakukan saat aplikasi sudah ditutup sepenuhnya. Setelah notifikasi dikirim dan diklik, aplikasi terbuka kembali dan menggunakan getInitialMessage() untuk mengambil data notifikasi, kemudian mengarahkan pengguna ke halaman Pengumuman #12 melalui route /pengumuman/12.
+
+|             Notifikasi              |    Tampilan Halaman Pengumuman 12     |
+| :--------------------------------:  | :----------------------------------: |
+| ![screenshot](Screenshot/uji31.png) | ![screenshot](Screenshot/uji32.png) |
+
+### Topic messaging
+
+Aplikasi subscribe ke topic pengumuman-kampus untuk menerima notifikasi broadcast. Pengujian melalui Firebase Console berhasil mengirim notifikasi ke perangkat dan mengarahkan ke halaman pengumuman.
+
+Hasil: Berhasil. Perangkat dapat menerima notifikasi yang dikirim melalui topic pengumuman-kampus.
+
+|             Notifikasi              |             Target Topic             |    Tampilan Halaman Pengumuman 20   |
+| :--------------------------------:  | :----------------------------------: |:----------------------------------: |
+| ![screenshot](Screenshot/uji41.png) | ![screenshot](Screenshot/uji43.png) | ![screenshot](Screenshot/uji42.png) |
+
+## AI Challenge
+
+### AI Prompt Challenge
+
+
