@@ -27,10 +27,17 @@ void registerBackgroundHandler() {
 
 
 Future<bool> requestNotificationPermission() async {
+  // Android 13+ membutuhkan izin notifikasi runtime.
+  // iOS menggunakan permission dari sistem APNs.
   final settings = await FirebaseMessaging.instance.requestPermission(
-    alert: true, badge: true, sound: true,
-    announcement: false, carPlay: false, criticalAlert: false,
+    alert: true,
+    badge: true,
+    sound: true,
+    announcement: false,
+    carPlay: false,
+    criticalAlert: false,
   );
+
   return settings.authorizationStatus == AuthorizationStatus.authorized ||
       settings.authorizationStatus == AuthorizationStatus.provisional;
 }
@@ -94,6 +101,20 @@ Future<void> initFcmToken({required Future<void> Function(String token) onToken}
   }
 }
 
+// [AI CHALLENGE - TAMBAHAN]
+// Fungsi untuk berhenti berlangganan dari topic.
+// Tidak dipanggil otomatis agar aplikasi tetap subscribe ke topic.
+Future<void> unsubscribeFromCampusTopic() async {
+  try {
+    await FirebaseMessaging.instance.unsubscribeFromTopic(
+      'pengumuman-kampus',
+    );
+    print('>>> SUDAH UNSUBSCRIBE TOPIC pengumuman-kampus');
+  } catch (e) {
+    print('Gagal unsubscribe dari topik: $e');
+  }
+}
+
 // Handler untuk Foreground & Background Click
 void listenForeground(void Function(String route) go) {
   _onNavigate = go; // Hubungkan router ke event klik banner lokal
@@ -116,10 +137,13 @@ void listenForeground(void Function(String route) go) {
     );
   });
 
-  // 2. Background: Notifikasi diklik saat aplikasi di-minimize
-  FirebaseMessaging.onMessageOpenedApp.listen((message) {
-    final route = message.data['route'] ?? '/';
-    go(route);
+   // 2. Background: Notifikasi diklik saat aplikasi di-minimize
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+      // [AI CHALLENGE - TAMBAHAN]
+      // Tidak menggunakan BuildContext.
+      // Navigasi dilakukan melalui callback router.
+      final route = message.data['route'] ?? '/';
+      go(route);
   });
 }
 
@@ -127,6 +151,9 @@ void listenForeground(void Function(String route) go) {
 Future<void> handleTerminated(void Function(String route) go) async {
   final initial = await FirebaseMessaging.instance.getInitialMessage();
   if (initial != null) {
+    // [AI CHALLENGE - TAMBAHAN]
+    // Tidak menggunakan BuildContext saat mengambil initial message.
+    // Navigasi dilakukan melalui callback router.
     final route = initial.data['route'] ?? '/';
     go(route);
   }

@@ -142,4 +142,32 @@ Hasil: Berhasil. Perangkat dapat menerima notifikasi yang dikirim melalui topic 
 
 ### AI Prompt Challenge
 
+Hasil AI Challenge: Implementasi notifikasi berhasil dipertahankan dengan penambahan fungsi unsubscribe topic, penanganan permission Android 13+/iOS, serta dokumentasi bagian yang tidak menggunakan BuildContext. Fitur foreground, background, terminated, dan topic messaging tetap berjalan seperti sebelumnya.
 
+### AI Verification Cheklist
+
+Sebelum draf AI diterima, verifikasi dan catat temuan di README/docs:
+
+1. [✓] Apakah background handler berupa fungsi top-level dengan @pragma('vm:entry-point')? (tolak jika berupa method kelas).
+
+firebaseMessagingBackgroundHandler() berada di luar class dan menggunakan @pragma('vm:entry-point'), sehingga dapat dijalankan oleh Firebase pada isolate background.
+
+2. [-] Apakah onTokenRefresh benar-benar mengirim token baru ke backend, bukan hanya dicetak ke log?
+
+Kode saat ini sudah memiliki onTokenRefresh dan memperbarui token di aplikasi, tetapi belum mengirim token baru ke backend karena project kamu belum memiliki endpoint backend /devices. 
+
+3. [✓] Apakah foreground memakai local notification manual? (tanpa ini banner tidak muncul saat aplikasi terbuka).
+
+Saat aplikasi terbuka, FirebaseMessaging.onMessage menerima pesan lalu _local.show() digunakan untuk menampilkan notifikasi secara manual.
+
+4. [✓] Apakah klik dari ketiga state (foreground/background/terminated) masuk ke rute yang benar? Buktikan dengan tabel pengujian.
+
+Foreground menggunakan callback local notification, background menggunakan onMessageOpenedApp, dan terminated menggunakan getInitialMessage(). Ketiganya sudah diuji dan berhasil mengarah ke halaman pengumuman.
+
+5. [✓] Apakah token/secret tidak di-hardcode dan tidak di-log penuh? Perbaiki bila AI melanggarnya.
+
+Token tidak ditulis secara hardcode. Saat ditampilkan di log, token hanya menggunakan 12 karakter pertama lalu dipotong dengan ..., sehingga token lengkap tidak terekspos.
+
+6. [✓] Keputusan final dan alasan teknis Anda, boleh berbeda dari saran AI selama berargumen.
+
+Kode AI tidak digunakan seluruhnya. Beberapa bagian dipertahankan karena sudah sesuai, sedangkan bagian yang tidak sesuai kebutuhan project diperbaiki secara manual tanpa mengubah fitur yang sudah berhasil.
