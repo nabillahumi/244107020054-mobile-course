@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 class AuthSession {
   const AuthSession({required this.access, required this.refresh});
   final String access;
@@ -25,5 +26,21 @@ class AuthRepository {
     await Future.delayed(const Duration(milliseconds: 300));
     if (refreshToken.isEmpty) throw Exception('Refresh token hilang');
     return 'mock-access-renewed-${DateTime.now().millisecondsSinceEpoch}';
+  }
+  
+
+  // <--- TAMBAHAN AI VERIFICATION
+  // Simulasi pengiriman FCM token ke backend.
+  Future<void> registerDeviceToken(String token) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+
+    if (token.isEmpty) {
+      throw Exception('FCM token kosong');
+    }
+
+    final truncatedToken =
+        token.length > 12 ? '${token.substring(0, 12)}...' : token;
+
+    debugPrint('>>> FCM TOKEN DIKIRIM KE BACKEND: $truncatedToken');
   }
 }

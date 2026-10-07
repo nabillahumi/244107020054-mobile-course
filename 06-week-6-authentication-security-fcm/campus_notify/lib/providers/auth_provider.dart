@@ -12,7 +12,7 @@ final authStateProvider =
 class AuthNotifier extends AsyncNotifier<bool> {
   @override
   Future<bool> build() async {
-    final token = await ref.watch(tokenStoreProvider).readAccess();
+    final token = await ref.watch(tokenStoreProvider).getAccessToken();
     return token != null;
   }
 
@@ -24,13 +24,13 @@ class AuthNotifier extends AsyncNotifier<bool> {
           .login(email: email, password: password);
       await ref
           .read(tokenStoreProvider)
-          .save(access: session.access, refresh: session.refresh);
+          .saveTokens(accessToken: session.access, refreshToken: session.refresh);
       return true;
     });
   }
 
   Future<void> logout() async {
-    await ref.read(tokenStoreProvider).clear();
+    await ref.read(tokenStoreProvider).clearTokens();
     ref.invalidateSelf();
   }
 }

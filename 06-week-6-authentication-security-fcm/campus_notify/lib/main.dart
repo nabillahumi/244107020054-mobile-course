@@ -10,6 +10,7 @@ import 'pages/login_page.dart';
 import 'pages/home_page.dart';
 import 'pages/announcement_page.dart';
 
+import 'routes.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   late final GoRouter router;
@@ -18,32 +19,32 @@ final routerProvider = Provider<GoRouter>((ref) {
     redirect: (context, state) {
       final authAsync = ref.read(authStateProvider);
       final loggedIn = authAsync.value ?? false;
-      final goingLogin = state.matchedLocation == '/login';
-      print(
+      final goingLogin = state.matchedLocation == AppRoutes.login;
+      debugPrint(
         ">>> [REDIRECT] loggedIn=$loggedIn | route=${state.matchedLocation}",
       );
       if (!loggedIn && !goingLogin) {
-        return '/login';
+        return AppRoutes.login;
       }
       if (loggedIn && goingLogin) {
-        return '/';
+        return AppRoutes.home;
       }
       return null;
     },
 
     routes: [
       GoRoute(
-        path: '/login',
-        builder: (_, __) => const LoginPage(),
+        path: AppRoutes.login,
+        builder: (_, _) => const LoginPage(),
       ),
 
       GoRoute(
-        path: '/',
-        builder: (_, __) => const HomePage(),
+        path: AppRoutes.home,
+        builder: (_, _) => const HomePage(),
       ),
 
       GoRoute(
-        path: '/pengumuman/:id',
+        path: AppRoutes.announcement,
         builder: (_, s) => AnnouncementPage(
           id: s.pathParameters['id'] ?? '',
         ),
@@ -52,7 +53,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 
   // Jika status login berubah, refresh redirect
-  ref.listen(authStateProvider, (_, __) {
+  ref.listen(authStateProvider, (_, _) {
     router.refresh();
   });
 
@@ -71,6 +72,9 @@ void main() async {
   // 2. Buat ProviderContainer agar state Riverpod bisa diisi sebelum UI muncul
   final container = ProviderContainer();
 
+  // DEVELOPMENT: hapus sesi login agar aplikasi selalu mulai dari halaman login
+  await container.read(tokenStoreProvider).clearTokens();
+
  // 1. Minta izin & inisialisasi local notification
   await requestNotificationPermission();
   await initLocalNotifications();
@@ -82,10 +86,10 @@ void main() async {
           token.length > 12 ? '${token.substring(0, 12)}...' : token;
 
       fcmTokenNotifier.value = truncatedToken;
-      print("FCM Token (Truncated): $truncatedToken");
+      debugPrint("FCM Token (Truncated): $truncatedToken");
     });
   } catch (e) {
-    print("FCM Error: $e");
+    debugPrint("FCM Error: $e");
     fcmTokenNotifier.value = "Gagal memuat token";
   }
 
@@ -114,7 +118,7 @@ class _MainAppState extends ConsumerState<MainApp> {
       final router = ref.read(routerProvider);
 
       void navigateTo(String route) {
-        print(">>> [NAVIGASI] Pindah ke route: $route");
+        debugPrint(">>> [NAVIGASI] Pindah ke route: $route");
         router.go(route);
       }
 

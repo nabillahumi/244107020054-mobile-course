@@ -1,20 +1,31 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class TokenStore {
-  TokenStore({FlutterSecureStorage? storage})
-      : _storage = storage ?? const FlutterSecureStorage();
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  final FlutterSecureStorage _storage;
-  static const _accessKey = 'access_token';
-  static const _refreshKey = 'refresh_token';
+  static const String _keyAccessToken = 'access_token';
+  static const String _keyRefreshToken = 'refresh_token';
 
-  Future<void> save({required String access, required String refresh}) async {
-    await _storage.write(key: _accessKey, value: access);
-    await _storage.write(key: _refreshKey, value: refresh);
+  // Menyimpan Token
+  Future<void> saveTokens({required String accessToken, String? refreshToken}) async {
+    await _storage.write(key: _keyAccessToken, value: accessToken);
+    if (refreshToken != null) {
+      await _storage.write(key: _keyRefreshToken, value: refreshToken);
+    }
   }
 
-  Future<String?> readAccess() => _storage.read(key: _accessKey);
-  Future<String?> readRefresh() => _storage.read(key: _refreshKey);
+  // Mengambil Access Token
+  Future<String?> getAccessToken() async {
+    return await _storage.read(key: _keyAccessToken);
+  }
 
-  Future<void> clear() => _storage.deleteAll();
+  // Mengambil Refresh Token
+  Future<String?> getRefreshToken() async {
+    return await _storage.read(key: _keyRefreshToken);
+  }
+
+  // Menghapus Token (Logout)
+  Future<void> clearTokens() async {
+    await _storage.deleteAll();
+  }
 }

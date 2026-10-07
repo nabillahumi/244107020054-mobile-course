@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../messaging/push_service.dart'; // Pastikan path import ini sesuai struktur folder kamu
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -14,10 +15,26 @@ class HomePage extends StatelessWidget {
         foregroundColor: Colors.white,
         centerTitle: true,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          final token = await FirebaseMessaging.instance.getToken();
+
+          if (token != null) {
+            fullFcmToken = token;
+
+            final truncated =
+                token.length > 12 ? '${token.substring(0, 12)}...' : token;
+
+            fcmTokenNotifier.value = truncated;
+          }
+
+          await Future.delayed(const Duration(milliseconds: 500));
+        },
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // CARD DISPLAY TOKEN TERPOTONG (UNTUK REPORT/JOBSHEET)
             Card(
@@ -128,6 +145,7 @@ class HomePage extends StatelessWidget {
               subtitle: 'Tekan Home (App Background) lalu kirim notifikasi dari Console.',
             ),
           ],
+        ),
         ),
       ),
     );
