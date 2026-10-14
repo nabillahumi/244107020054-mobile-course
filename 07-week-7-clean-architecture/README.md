@@ -31,7 +31,21 @@ Berikut merupakan hasil running:
 
 ## Gambar struktur target
 
-![screenshot](Screenshot/tampilan_awal.png)
+![screenshot](Screenshot/stukrut.png)
+
+## Praktikum 2: Domain dan data per fitur
+
+1. Pemisahan Layer: Berhasil memisahkan kode bisnis murni dari interaksi database eksternal menggunakan arsitektur feature-first.
+
+2. Layer Domain (Murni): Berisi Entity (Note), kontrak Repository (NoteRepository), penanganan Failure, dan Use Case (GetNotes) yang bebas dari dependency Flutter maupun SQFlite.
+
+3. Layer Data (Eksternal): Berisi Model (NoteModel) untuk konversi data (mapping) serta implementasi repository (NoteRepositoryImpl) yang berinteraksi langsung dengan database SQLite (sqflite).
+
+4. Penanganan Error Bersih: Menggunakan Dart Records ({Data data, Failure? failure}) agar sukses atau gagal dikembalikan secara eksplisit tanpa exception yang bocor ke layer antarmuka.
+
+## Praktikum 3: Presentation, DI, dan verifikasi
+
+
 
 |        Kode Setting_page.dart 1             |          Kode Setting_page.dart 2           |
 | :-------------------------------------:     | :-----------------------------------------: |
