@@ -45,8 +45,177 @@ Berikut merupakan hasil running:
 
 ## Praktikum 3: Presentation, DI, dan verifikasi
 
+|         Hasil Uji nomer 1          |          Hasil uji nomer 2         |
+| :----------------------------:     | :--------------------------------: |
+| ![screenshot](Screenshot/uji1.png) | ![screenshot](Screenshot/uji2.png) |
 
+### Flutter analyze
 
-|        Kode Setting_page.dart 1             |          Kode Setting_page.dart 2           |
-| :-------------------------------------:     | :-----------------------------------------: |
-| ![screenshot](Screenshot/kode_setting1.png) | ![screenshot](Screenshot/kode_setting2.png) |
+![screenshot](Screenshot/uji3.png)
+
+### Flutter test
+
+![screenshot](Screenshot/uji4.png)
+
+Ketiga tahapan verifikasi telah berhasil diselesaikan dengan hasil optimal: layer presentation dan domain terbukti steril dari dependensi luar melalui uji regex (0 results), perintah flutter analyze berjalan bersih tanpa issue, serta seluruh rangkaian flutter test dinyatakan lulus (passed).
+
+## AI Challenge
+
+Project Flutter saya: campus_notify (auth + FCM + daftar pengumuman).
+Kondisi kini: folder lib/{data, providers, pages, messaging},
+repository tercampur dengan implementasi, widget memanggil Dio langsung.
+Tugas:
+1. Usulkan struktur feature-first Clean Architecture
+   (presentation/domain/data) untuk fitur auth + announcements.
+2. Untuk tiap file lama, sebutkan tujuan barunya (pindah/pecah/hapus).
+3. Tandai bagian yang over-engineering bila diterapkan ke CRUD sederhana,
+   dan kapan use case benar-benar dibutuhkan vs repository langsung.
+4. Tunjukkan wiring DI dengan Riverpod (tanpa package DI tambahan).
+Jelaskan trade-off setiap keputusan.
+
+Jawab : 
+
+1.  
+```text
+lib/
+├── core/                               # Konfigurasi global (Dio client, error handling, router)
+└── features/
+    ├── auth/                           # Modul Fitur Autentikasi
+    │   ├── data/
+    │   │   ├── datasources/            # Sumber data mentah (AuthRemoteDataSource, SecureStorage)
+    │   │   ├── models/                 # Model DTO (UserResponse dengan fromJson/toJson)
+    │   │   └── repositories/           # Implementasi AuthRepositoryImpl
+    │   ├── domain/
+    │   │   ├── entities/               # Objek murni User (bebas framework)
+    │   │   ├── repositories/           # Abstraksi interface AuthRepository
+    │   │   └── usecases/               # Aturan bisnis (Login, Logout, CheckSession)
+    │   └── presentation/
+    │       ├── pages/                  # LoginPage, RegisterPage
+    │       ├── providers/              # Riverpod state/notifiers untuk auth
+    │       └── widgets/                # Komponen UI spesifik auth
+    │
+    └── announcements/                  # Modul Fitur Pengumuman & FCM
+        ├── data/
+        │   ├── datasources/            # AnnouncementApi (Dio) & FcmService (Firebase Messaging)
+        │   ├── models/                 # AnnouncementModel (DTO mapping)
+        │   └── repositories/           # AnnouncementRepositoryImpl
+        ├── domain/
+        │   ├── entities/               # Announcement entity murni
+        │   ├── repositories/           # Abstraksi AnnouncementRepository
+        │   └── usecases/               # GetAnnouncements, MarkAnnouncementAsRead
+        └── presentation/
+            ├── pages/                  # AnnouncementListPage, AnnouncementDetailPage
+            ├── providers/              # announcementsProvider (Riverpod)
+            └── widgets/                # AnnouncementCard
+```
+
+2. Peta Migrasi File Lama
+
+- lib/data/*: Pecah & Pindah ke masing-masing folder features/<feature>/data/datasources/ atau repositories/ agar terisolasi berdasarkan fiturnya.
+
+- lib/providers/*: Pecah & Pindah ke folder features/<feature>/presentation/providers/ agar state management terikat langsung dengan presentation layer fitur terkait.
+
+- lib/pages/*: Pindah ke folder features/<feature>/presentation/pages/.
+
+- lib/messaging/* (FCM): Pindah ke dalam folder features/announcements/data/datasources/ karena layanan push notification berkedudukan sebagai remote data source bagi pengumuman/notifikasi.
+
+3. Batas Over-Engineering vs Kebutuhan Use Case
+
+- Kapan Use Case Benar-Benar Dibutuhkan:
+Digunakan ketika terdapat logika bisnis yang kompleks, validasi bertingkat, atau proses yang menggabungkan beberapa repository sekaligus sebelum diserahkan ke UI (contoh: proses Login yang melibatkan autentikasi jaringan, enkripsi token keamanan, dan penyimpanan sesi lokal secara bersamaan).
+
+- Kapan Tergolong Over-Engineering:
+Untuk operasi CRUD sederhana satu-baris (seperti mengambil daftar pengumuman atau toggle status baca yang langsung meneruskan data mentah dari repository tanpa aturan bisnis tambahan), pembuatan Use Case terpisah adalah tindakan over-engineering yang hanya menambah boilerplate code tanpa nilai tambah fungsional.
+
+- Keputusan Teknis:
+Untuk operasi sederhana, notifier atau provider diperbolehkan mengakses repository secara langsung. Use Case hanya diterapkan pada alur bisnis utama yang memiliki aturan khusus.
+
+4. 
+```
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../data/datasources/announcement_remote_datasource.dart';
+import '../data/repositories/announcement_repository_impl.dart';
+import '../domain/repositories/announcement_repository.dart';
+import '../domain/usecases/get_announcements.dart';
+import '../domain/entities/announcement.dart';
+
+// 1. Data Layer: Menyediakan instance Remote Data Source & Repository Implementation
+final announcementRemoteDataSourceProvider = Provider<AnnouncementRemoteDataSource>((ref) {
+  return AnnouncementRemoteDataSource(ref.watch(dioProvider));
+});
+
+final announcementRepositoryProvider = Provider<AnnouncementRepository>((ref) {
+  return AnnouncementRepositoryImpl(
+    remoteDataSource: ref.watch(announcementRemoteDataSourceProvider),
+  );
+});
+
+// 2. Domain Layer: Use Case menerima abstraksi repository
+final getAnnouncementsProvider = Provider<GetAnnouncements>((ref) {
+  return GetAnnouncements(ref.watch(announcementRepositoryProvider));
+});
+
+// 3. Presentation Layer: State untuk UI (Widget mengonsumsi provider ini tanpa inisialisasi manual)
+final announcementsProvider = FutureProvider<List<Announcement>>((ref) async {
+  final useCase = ref.watch(getAnnouncementsProvider);
+  return await useCase.call();
+});
+```
+
+5. Analisis Trade-Off Setiap Keputusan
+
+- Penerapan Struktur Feature-First & Clean Architecture:
+
+Kelebihan: Skalabilitas tinggi, pemisahan tanggung jawab (separation of concerns) sangat jelas, kode modular, dan sangat mudah diuji melalui unit testing.
+
+Kekurangan: Menambahkan jumlah direktori dan file boilerplate di awal, sehingga memperlambat kecepatan penulisan kode untuk aplikasi skala kecil.
+
+- Peniadaan Use Case pada Operasi Sederhana:
+
+Kelebihan: Mengurangi kompleksitas struktur folder dan jumlah baris kode yang repetitif.
+
+Kekurangan: Jika aturan bisnis berkembang di kemudian hari, refaktor dari pemanggilan repository langsung ke use case harus dilakukan secara manual.
+
+- Penggunaan Riverpod sebagai Mekanisme DI:
+
+Kelebihan: Transparan, terintegrasi penuh dengan siklus hidup widget Flutter, dan bebas dari konfigurasi code generator tambahan (build_runner).
+
+Kekurangan: Manajemen dependensi global harus dikontrol dengan cermat agar tidak terjadi kebocoran memori atau keterikatan siklikal antar-provider.
+
+### AI Verification Checklist
+
+### AI Verification Checklist
+
+1. [✓] Apakah interface repository tinggal di domain dan implementasi di data?
+   
+   Interface repository dipisahkan di `domain/repositories/` sedangkan implementasinya berada di `data/repositories/`, memenuhi aturan *Dependency Inversion Principle*.
+
+2. [✓] Apakah domain bebas import Flutter/Dio/SQLite/Firebase?
+   
+   Bebas 100%. Hasil verifikasi pencarian regex pada folder `domain/` menghasilkan **0 results**, memastikan layer domain murni menggunakan Dart standar.
+
+3. [✓] Apakah AI membuat use case untuk tiap CRUD satu-baris?
+   
+   Usulan awal AI yang membuat use case untuk tiap CRUD sederhana ditolak. Pengambilan data sederhana dilakukan langsung dari repository ke provider/notifier untuk menghindari *over-engineering* dan memangkas *boilerplate code*.
+
+4. [✓] Apakah entity bebas mapping (toMap/fromMap/toJson hanya di model)?
+   
+   Entity di layer domain murni hanya berisi properti data, sedangkan metode serialisasi/deserialisasi (`fromJson`/`toJson`) diisolasi di kelas Model (DTO) pada layer data.
+
+5. [✓] Apakah wiring DI terpusat di provider dan widget tidak new Repository() sendiri?
+   
+   Seluruh inisialisasi dependensi disuntikkan secara terpusat melalui Riverpod Provider di `notes_providers.dart`, sehingga Widget UI tidak pernah melakukan instansiasi repository secara manual.
+
+6. [✓] Keputusan final dan alasan teknis Anda.
+   
+   Struktur *feature-first Clean Architecture* digunakan dengan beberapa penyederhanaan pada operasi CRUD yang sederhana. Tujuannya agar kode tetap rapi dan mudah dipahami tanpa membuat terlalu banyak file yang tidak diperlukan.
+
+## Refactoring, testing, dan error umum
+
+### Refactoring Challenge
+
+1. Terapkan pola yang sama ke fitur kedua (auth atau announcements): entity + repository interface + impl + 1 use case + provider wiring. Jangan biarkan satu fitur bersih dan sisanya kotor.
+
+2. Ekstrak formatting tanggal dan parsing rute ke fungsi murni di lib/core/format.dart agar bisa diuji tanpa widget.
+
+3. Pindahkan semua exception mentah menjadi Failure yang ramah pengguna sebelum mencapai UI; UI hanya menerima message.
