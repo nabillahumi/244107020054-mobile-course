@@ -216,6 +216,114 @@ Kekurangan: Manajemen dependensi global harus dikontrol dengan cermat agar tidak
 
 1. Terapkan pola yang sama ke fitur kedua (auth atau announcements): entity + repository interface + impl + 1 use case + provider wiring. Jangan biarkan satu fitur bersih dan sisanya kotor.
 
+### Kode announcement.dart
+
+![screenshot](Screenshot/1.png)
+
+### Kode announcement_repository.dart
+
+![screenshot](Screenshot/2.png)
+
+### Kode get_announcement.dart
+
+![screenshot](Screenshot/3.png)
+
+### Kode announcement_model.dart
+
+![screenshot](Screenshot/4.png)
+
 2. Ekstrak formatting tanggal dan parsing rute ke fungsi murni di lib/core/format.dart agar bisa diuji tanpa widget.
 
+### Kode format.dart
+
+![screenshot](Screenshot/format.png)
+
 3. Pindahkan semua exception mentah menjadi Failure yang ramah pengguna sebelum mencapai UI; UI hanya menerima message.
+
+### Kode announcement_repository_impl.dart
+
+![screenshot](Screenshot/5.png)
+
+### Checklist verifikasi mandiri
+
+1. [✓] Tiga grep sterilitas (presentation & domain) nol hasil.
+
+Memastikan bahwa layer domain dan presentation benar-benar bersih (steril) serta tidak ada import yang melanggar aturan Clean Architecture (misalnya layer domain mengimpor file dari layer data).
+
+2. [✓] Interface di domain, implementasi di data, mapping hanya di model.
+
+Menerapkan prinsip Dependency Inversion. Kontrak atau interface repository diletakkan di domain, kelas konkret implementasinya di data, dan proses konversi JSON (mapping) hanya dilakukan di dalam kelas Model.
+
+3. [✓] Widget tidak menginstansiasi repository; semua lewat provider.
+
+Mencegah tight coupling dengan memastikan widget UI tidak membuat objek repository secara manual menggunakan kata kunci new atau pemanggilan langsung, melainkan melalui manajemen state Riverpod.
+
+4. [✓] Aplikasi berjalan identik sebelum/sesudah refactor (bukti screenshot).
+
+Membuktikan bahwa proses perombakan struktur kode (refactoring) tidak mengubah fungsionalitas atau alur kerja aplikasi yang sudah ada sebelumnya.
+
+5. [✓] flutter analyze bersih dan semua test lulus.
+
+Memastikan kode bebas dari segala bentuk warning, linter error, serta seluruh pengujian otomatis (unit/widget test) berhasil dieksekusi tanpa ada yang gagal.
+
+## Tugas, refleksi, dan referensi
+
+### Mini project / Industry Challenge
+
+Refactor project Minggu 5 atau 6 Anda menjadi Clean Architecture feature-first (lanjutkan repository yang sama, bukan project baru):
+
+1. Minimal 1 fitur penuh (notes atau announcements) terpisah menjadi domain/ (entity, repository interface, use case, failure) + data/ (model, repository impl) + presentation/ (provider wiring, pages).
+
+![screenshot](Screenshot/nomer1.png)
+
+2. Dependency rule terbukti: sertakan hasil tiga grep sterilitas di README.
+
+|         Hasil Uji nomer 1          |          Hasil uji nomer 2         |
+| :----------------------------:     | :--------------------------------: |
+| ![screenshot](Screenshot/uji1.png) | ![screenshot](Screenshot/uji2.png) |
+
+3. Behavior identik: screenshot before/after tiap fitur di folder screenshots/.
+
+Halaman aplikasi di emulator/perangkat sebelum refactor (atau tangkapan layar UI saat ini yang membuktikan tampilan/fungsi tetap berjalan normal setelah refaktor) dan tidak ada perbedaan before/afternya
+
+|                 Halaman login           |            Halaman Token             |
+| :-------------------------------------: | :-----------------------------------: |
+| ![screenshot](Screenshot/login.png) | ![screenshot](Screenshot/token.png) |
+
+4. Sertakan minimal 2 test yang lulus (use case sukses + failure dengan repository palsu).
+
+|             Hasil Flutter Analyze             |             Hasil Flutter test             |
+| :---------------------------------------:     | :----------------------------------------: |
+| ![screenshot](Screenshot/flutter_analyze.png) | ![screenshot](Screenshot/flutter_test.png) |
+
+
+5. Kerjakan AI Challenge dan dokumentasikan prompt, tabel usulan-vs-keputusan-final, dan alasan teknis di docs/.
+
+6. Push ke repository portfolio pada folder 07-week-7-clean-architecture/ (atau lanjutkan folder minggu asal + catat refactor di README) dengan struktur lib/, test/, docs/, README.md, dan screenshots/. README menjelaskan tujuan, diagram layer + arah dependensi, fitur utama, stack teknologi, cara menjalankan, dan hasil yang dicapai.
+
+
+### Refleksi
+
+*1. Mengapa interface repository harus tinggal di domain, bukan di data? Apa yang rusak bila dibalik?*
+
+Jawab : 
+
+Interface repository diletakkan di domain agar aturan bisnis tidak bergantung pada teknologi tertentu. Jika interface diletakkan di data, domain akan bergantung pada implementasi luar sehingga kode lebih sulit diuji dan dikembangkan.
+
+*2. Kapan use case benar-benar dibutuhkan, dan kapan repository langsung ke notifier sudah cukup?*
+
+Jawab : 
+
+Use case diperlukan jika proses bisnis cukup kompleks, melibatkan beberapa repository, atau memiliki aturan validasi khusus. Untuk operasi CRUD sederhana, provider/notifier bisa langsung menggunakan repository agar kode lebih praktis dan tidak terlalu banyak kelas tambahan.
+
+*3. Apa biaya over-engineering (use case per CRUD satu-baris) bagi tim kecil? Kapan biayanya sepadan?*
+
+Jawab : 
+
+Membuat use case untuk setiap CRUD sederhana dapat menambah jumlah file dan kode yang harus dikelola, sehingga pengembangan menjadi lebih lambat. Pendekatan ini lebih bermanfaat ketika aplikasi semakin besar atau aturan bisnis mulai kompleks.
+
+*4. Bagian mana dari usulan AI yang Anda tolak atau sederhanakan, dan mengapa?*
+
+Jawab :
+
+Penggunaan package intl untuk memformat tanggal diganti dengan fungsi bawaan Dart. Tujuannya untuk mengurangi dependensi tambahan, menghindari peringatan terkait package, dan menjaga kode tetap sederhana.
