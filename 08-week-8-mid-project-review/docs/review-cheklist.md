@@ -27,6 +27,10 @@ git status
 
 ![screenshot](Screenshot/git2.png)
 
+ develop
+=======
+![screenshot](Screenshot/gitpull.png)
+ main
 
 ### 3. Perbaiki satu commit buruk (simulasi)
 
@@ -72,6 +76,7 @@ Dengan menambahkan target lib test, kita mengarahkan alat formatnya hanya memind
 - [x] **Unit Testing:** `flutter test` hijau (lulus seluruh pengujian).
 - [x] **PR & Commit History:** Terstruktur dengan PR kecil dan commit bermakna.
 - [x] **Dokumentasi README:** Lengkap dengan cara menjalankan aplikasi dan status project.
+ develop
 - [x] **Peer Review:** Seluruh komentar review telah ditindaklanjuti dan di-merge.
 
 ## Refactoring, testing, dan error umum
@@ -177,3 +182,6 @@ Jawab :
 Perbaikan Konkret: Menambahkan validasi pengecekan teks kosong (if (title.trim().isEmpty)) serta penanganan exception yang lebih eksplisit pada repository layer sebelum dikirim ke UI.
 
 Dampaknya: Aplikasi menjadi lebih stabil, terhindar dari crash akibat masukan data yang tidak valid, dan antarmuka pengguna dapat menampilkan pesan error (feedback) yang jelas ketika terjadi kesalahan.
+
+- [x] **Peer Review:** Seluruh komentar review telah ditindaklanjuti dan di-merge.
+ main

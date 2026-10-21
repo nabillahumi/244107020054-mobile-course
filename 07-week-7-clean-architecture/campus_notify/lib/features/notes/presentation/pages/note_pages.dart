@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
+ develop
 import 'package:go_router/go_router.dart';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../providers/notes_providers.dart';
+
+main
 
 class NotePage extends StatelessWidget {
   const NotePage({super.key});

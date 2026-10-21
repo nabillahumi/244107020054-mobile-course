@@ -35,10 +35,12 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
 
     routes: [
+ develop
       GoRoute(
         path: '/notes',
         builder: (_, _) => const NotePage(), // Panggil class NotePage kamu
       ),
+ main
       GoRoute(path: AppRoutes.login, builder: (_, _) => const LoginPage()),
 
       GoRoute(path: AppRoutes.home, builder: (_, _) => const HomePage()),
