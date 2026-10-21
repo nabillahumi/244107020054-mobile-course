@@ -13,14 +13,16 @@ class AnnouncementModel extends Announcement {
       id: json['id']?.toString() ?? '',
       title: json['title'] ?? '',
       body: json['body'] ?? '',
-      createdAt: DateTime.parse(json['created_at'] ?? DateTime.now().toIso8601String()),
+      createdAt: DateTime.parse(
+        json['created_at'] ?? DateTime.now().toIso8601String(),
+      ),
     );
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'title': title,
-        'body': body,
-        'created_at': createdAt.toIso8601String(),
-      };
+    'id': id,
+    'title': title,
+    'body': body,
+    'created_at': createdAt.toIso8601String(),
+  };
 }

@@ -8,9 +8,7 @@ class AnnouncementPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Pengumuman #$id')),
-      body: Center(
-        child: Text('Detail informasi untuk pengumuman ID: $id'),
-      ),
+      body: Center(child: Text('Detail informasi untuk pengumuman ID: $id')),
     );
   }
 }

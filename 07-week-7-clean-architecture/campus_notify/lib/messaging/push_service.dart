@@ -7,6 +7,7 @@ import '../data/auth_repository.dart';
 import '../routes.dart';
 
 import '../data/api_errors.dart';
+
 import 'package:dio/dio.dart';
 
 // StateProvider untuk menyimpan token terpotong
@@ -28,8 +29,6 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 void registerBackgroundHandler() {
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 }
-
-
 
 Future<bool> requestNotificationPermission() async {
   // Android 13+ membutuhkan izin notifikasi runtime.
@@ -74,15 +73,17 @@ Future<void> initLocalNotifications() async {
 String? pendingDeepLink;
 
 // <--- 2. PERBAIKAN: Fungsi initFcmToken dibungkus try-catch agar tidak layar hitam
-Future<void> initFcmToken(
-    {required Future<void> Function(String token) onToken}) async {
+Future<void> initFcmToken({
+  required Future<void> Function(String token) onToken,
+}) async {
   try {
     // 1. Ambil token saat ini dan simpan
     final token = await FirebaseMessaging.instance.getToken();
     if (token != null) {
       fullFcmToken = token;
-      final truncated =
-          token.length > 12 ? '${token.substring(0, 12)}...' : token;
+      final truncated = token.length > 12
+          ? '${token.substring(0, 12)}...'
+          : token;
       fcmTokenNotifier.value = truncated;
       await onToken(token);
 
@@ -104,8 +105,9 @@ Future<void> initFcmToken(
   // 2. Listener jika token diperbarui (onTokenRefresh)
   FirebaseMessaging.instance.onTokenRefresh.listen((newToken) async {
     fullFcmToken = newToken;
-    final truncated =
-        newToken.length > 12 ? '${newToken.substring(0, 12)}...' : newToken;
+    final truncated = newToken.length > 12
+        ? '${newToken.substring(0, 12)}...'
+        : newToken;
     fcmTokenNotifier.value = truncated;
 
     await onToken(newToken);
@@ -127,9 +129,7 @@ Future<void> initFcmToken(
 
 Future<void> unsubscribeFromCampusTopic() async {
   try {
-    await FirebaseMessaging.instance.unsubscribeFromTopic(
-      'pengumuman-kampus',
-    );
+    await FirebaseMessaging.instance.unsubscribeFromTopic('pengumuman-kampus');
     debugPrint('>>> SUDAH UNSUBSCRIBE TOPIC pengumuman-kampus');
   } catch (e) {
     debugPrint('Gagal unsubscribe dari topik: $e');
