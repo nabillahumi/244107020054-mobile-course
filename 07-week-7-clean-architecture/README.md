@@ -327,3 +327,5 @@ Membuat use case untuk setiap CRUD sederhana dapat menambah jumlah file dan kode
 Jawab :
 
 Penggunaan package intl untuk memformat tanggal diganti dengan fungsi bawaan Dart. Tujuannya untuk mengurangi dependensi tambahan, menghindari peringatan terkait package, dan menjaga kode tetap sederhana.
+
+coba aja js 8
