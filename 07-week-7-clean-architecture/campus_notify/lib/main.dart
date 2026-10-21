@@ -1,3 +1,4 @@
+import 'features/notes/presentation/pages/note_pages.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,23 +17,28 @@ final routerProvider = Provider<GoRouter>((ref) {
   late final GoRouter router;
 
   router = GoRouter(
+    initialLocation: '/notes',
     redirect: (context, state) {
-      final authAsync = ref.read(authStateProvider);
-      final loggedIn = authAsync.value ?? false;
-      final goingLogin = state.matchedLocation == AppRoutes.login;
-      debugPrint(
-        ">>> [REDIRECT] loggedIn=$loggedIn | route=${state.matchedLocation}",
-      );
-      if (!loggedIn && !goingLogin) {
-        return AppRoutes.login;
-      }
-      if (loggedIn && goingLogin) {
-        return AppRoutes.home;
-      }
+      // final authAsync = ref.read(authStateProvider);
+      // final loggedIn = authAsync.value ?? false;
+      // final goingLogin = state.matchedLocation == AppRoutes.login;
+      // debugPrint(
+      //   ">>> [REDIRECT] loggedIn=$loggedIn | route=${state.matchedLocation}",
+      // );
+      // if (!loggedIn && !goingLogin) {
+      //   return AppRoutes.login;
+      // }
+      // if (loggedIn && goingLogin) {
+      //   return AppRoutes.home;
+      // }
       return null;
     },
 
     routes: [
+      GoRoute(
+        path: '/notes',
+        builder: (_, _) => const NotePage(), // Panggil class NotePage kamu
+      ),
       GoRoute(path: AppRoutes.login, builder: (_, _) => const LoginPage()),
 
       GoRoute(path: AppRoutes.home, builder: (_, _) => const HomePage()),

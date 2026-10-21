@@ -89,3 +89,71 @@ Saran Nitpick. AI menyarankan aturan style yang bertentangan dengan aturan Linte
 5. [✓] Keputusan final dan alasan teknis Anda, boleh berbeda dari saran AI selama berargumen.
 
 Diterima. Menambahkan unit test untuk skenario failure path di get_notes_test.dart agar pengujian lengkap.
+
+### Perbaikan
+
+1. Perbaikanuntuk temuan 1 & 2 (False Positive)
+
+```sql
+// lib/features/notes/domain/entities/note.dart
+import 'package:equatable/equatable.dart';
+
+class Note extends Equatable {
+  final String id;
+  final String title;
+  final String content;
+  final String createdAt;
+
+  const Note({
+    required this.id,
+    required this.title,
+    required this.content,
+    required this.createdAt,
+  });
+
+  @override
+  List<Object?> get props => [id, title, content, createdAt];
+}
+```
+
+2. Perbaikan untuk Temuan 3 (Handling Exception di Repository Implementation)
+
+```sql
+// lib/features/notes/data/repositories/note_repositories_impl.dart
+import 'package:dartz/dartz.dart';
+import '../../../../core/failures.dart';
+import '../../domain/entities/note.dart';
+import '../../domain/repositories/note_repository.dart';
+import '../datasources/note_local_database.dart';
+
+class NoteRepositoryImpl implements NoteRepository {
+  final NoteLocalDatabase localDatabase;
+
+  NoteRepositoryImpl({required this.localDatabase});
+
+  @override
+  Future<Either<Failure, List<Note>>> getNotes() async {
+    try {
+      final noteModels = await localDatabase.getNotes();
+      final notes = noteModels.map((model) => model.toEntity()).toList();
+      return Right(notes);
+    } catch (e) {
+      return Left(DatabaseFailure(e.toString()));
+    }
+  }
+}
+```
+
+3. Perbaikan untuk Temuan 4 (Pertahankan const pada Widget)
+Karena saran AI DITOLAK, keyword const tetap dipertahankan pada Widget UI untuk performa:
+
+```sql
+// lib/features/notes/presentation/pages/note_pages.dart
+const NoteItemWidget(
+  key: ValueKey('note_item'),
+  title: 'Catatan Kuliah',
+);
+```
+
+## Refactoring, testing, dan error umum
+
