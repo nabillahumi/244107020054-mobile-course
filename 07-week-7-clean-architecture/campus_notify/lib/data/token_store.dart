@@ -7,7 +7,10 @@ class TokenStore {
   static const String _keyRefreshToken = 'refresh_token';
 
   // Menyimpan Token
-  Future<void> saveTokens({required String accessToken, String? refreshToken}) async {
+  Future<void> saveTokens({
+    required String accessToken,
+    String? refreshToken,
+  }) async {
     await _storage.write(key: _keyAccessToken, value: accessToken);
     if (refreshToken != null) {
       await _storage.write(key: _keyRefreshToken, value: refreshToken);

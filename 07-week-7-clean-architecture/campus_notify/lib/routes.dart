@@ -11,10 +11,10 @@ class AppRoutes {
     return '/pengumuman/$id';
   }
 }
-/// Fungsi murni parsing payload FCM ke rute GoRouter
-  String routeFromMessage(Map<String, dynamic> data) {
-    final route = data['route']?.toString() ?? AppRoutes.home;
-    if (route.isEmpty) return AppRoutes.home;
-    return route.startsWith('/') ? route : '/$route';
-  }
 
+/// Fungsi murni parsing payload FCM ke rute GoRouter
+String routeFromMessage(Map<String, dynamic> data) {
+  final route = data['route']?.toString() ?? AppRoutes.home;
+  if (route.isEmpty) return AppRoutes.home;
+  return route.startsWith('/') ? route : '/$route';
+}

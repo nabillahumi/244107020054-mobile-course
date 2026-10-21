@@ -33,21 +33,13 @@ final routerProvider = Provider<GoRouter>((ref) {
     },
 
     routes: [
-      GoRoute(
-        path: AppRoutes.login,
-        builder: (_, _) => const LoginPage(),
-      ),
+      GoRoute(path: AppRoutes.login, builder: (_, _) => const LoginPage()),
 
-      GoRoute(
-        path: AppRoutes.home,
-        builder: (_, _) => const HomePage(),
-      ),
+      GoRoute(path: AppRoutes.home, builder: (_, _) => const HomePage()),
 
       GoRoute(
         path: AppRoutes.announcement,
-        builder: (_, s) => AnnouncementPage(
-          id: s.pathParameters['id'] ?? '',
-        ),
+        builder: (_, s) => AnnouncementPage(id: s.pathParameters['id'] ?? ''),
       ),
     ],
   );
@@ -65,7 +57,7 @@ final routerProvider = Provider<GoRouter>((ref) {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  
+
   //  (Nomor 1 Praktikum 3)
   registerBackgroundHandler();
 
@@ -75,19 +67,22 @@ void main() async {
   // DEVELOPMENT: hapus sesi login agar aplikasi selalu mulai dari halaman login
   await container.read(tokenStoreProvider).clearTokens();
 
- // 1. Minta izin & inisialisasi local notification
+  // 1. Minta izin & inisialisasi local notification
   await requestNotificationPermission();
   await initLocalNotifications();
 
   // Bungkus persiapan notifikasi dalam try-catch
   try {
-    await initFcmToken(onToken: (token) async {
-      final truncatedToken =
-          token.length > 12 ? '${token.substring(0, 12)}...' : token;
+    await initFcmToken(
+      onToken: (token) async {
+        final truncatedToken = token.length > 12
+            ? '${token.substring(0, 12)}...'
+            : token;
 
-      fcmTokenNotifier.value = truncatedToken;
-      debugPrint("FCM Token (Truncated): $truncatedToken");
-    });
+        fcmTokenNotifier.value = truncatedToken;
+        debugPrint("FCM Token (Truncated): $truncatedToken");
+      },
+    );
   } catch (e) {
     debugPrint("FCM Error: $e");
     fcmTokenNotifier.value = "Gagal memuat token";
@@ -95,10 +90,7 @@ void main() async {
 
   // 4. Jalankan aplikasi menggunakan UncontrolledProviderScope
   runApp(
-    UncontrolledProviderScope(
-      container: container,
-      child: const MainApp(),
-    ),
+    UncontrolledProviderScope(container: container, child: const MainApp()),
   );
 }
 
@@ -127,7 +119,7 @@ class _MainAppState extends ConsumerState<MainApp> {
 
       // Eksekusi jika aplikasi dibuka dari keadaan Terminated
       handleTerminated(navigateTo);
-      });
+    });
   }
 
   @override

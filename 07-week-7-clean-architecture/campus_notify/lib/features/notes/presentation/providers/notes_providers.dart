@@ -1,6 +1,9 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../data/repositories/note_repositories_impl.dart';
+
 import 'package:campus_notify/features/notes/data/datasources/note_local_database.dart';
+
 import '../../domain/repositories/note_repository.dart';
 import '../../domain/usecases/get_notes.dart';
 import '../../domain/entities/note.dart';

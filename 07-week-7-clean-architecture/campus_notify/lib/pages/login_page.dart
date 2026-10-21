@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../providers/auth_provider.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -39,10 +40,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             else
               ElevatedButton(
                 onPressed: () {
-                  ref.read(authStateProvider.notifier).login(
-                        _emailController.text,
-                        _passwordController.text,
-                      );
+                  ref
+                      .read(authStateProvider.notifier)
+                      .login(_emailController.text, _passwordController.text);
                 },
                 child: const Text('Masuk'),
               ),

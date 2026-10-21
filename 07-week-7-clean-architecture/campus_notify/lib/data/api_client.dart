@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+
 import 'auth_repository.dart';
 import 'token_store.dart';
 
@@ -29,7 +30,8 @@ Dio buildApiClient(TokenStore store, AuthRepository auth) {
             );
             return handler.resolve(retry);
           } catch (_) {
-            await store.clearTokens(); // Refresh gagal/kedaluwarsa -> hapus token
+            await store
+                .clearTokens(); // Refresh gagal/kedaluwarsa -> hapus token
           }
         }
         handler.next(e);
