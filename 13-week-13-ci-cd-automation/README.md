@@ -180,6 +180,8 @@ Langkah-langkah pengujian dan evaluasi eksekusi pipeline GitHub Actions:
 4. Membuka bagian **Artifacts** di bagian bawah ringkasan run dan mengunduh arsip `android-builds.zip`.
 5. Mencatat hash commit Git yang menghasilkan artefak tersebut untuk keperluan pelacakan audit (*traceability*).
 
+![Screenshot GitHub Actions](screenshots/05_github_actions_run.png)
+
 ---
 
 ### 2. Tugas
